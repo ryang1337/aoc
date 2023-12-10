@@ -33,7 +33,11 @@ impl Hand {
 
         let mut a = 0;
         let mut b = 0;
-        for (_, occur) in map {
+        for (&c, &occur) in &map {
+            // don't consider 'J' for p2
+            if c == 'J' {
+                continue;
+            }
             if occur > a {
                 b = a;
                 a = occur;
@@ -41,6 +45,10 @@ impl Hand {
                 b = occur;
             }
         }
+
+        // add wilds to max occur for p2
+        let wild = if map.contains_key(&'J') { map[&'J'] } else { 0 };
+        a += wild;
 
         match (a, b) {
             (5, _) => Hand {
@@ -107,7 +115,8 @@ impl Hand {
     fn get_card_value(c: &char) -> u32 {
         let mut map = HashMap::new();
         map.insert('T', 10);
-        map.insert('J', 11);
+        // map.insert('J', 11); p1
+        map.insert('J', 0);
         map.insert('Q', 12);
         map.insert('K', 13);
         map.insert('A', 14);
